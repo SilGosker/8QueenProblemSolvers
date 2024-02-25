@@ -2,7 +2,7 @@ import java.util.Date;
 import java.util.Random;
 
 public class SimulatedAnnealingAlgorithm implements EightQueenAlgorithm {
-    private Chessboard chessboard;
+    private final Chessboard chessboard;
     private long startTimeMs;
 
     public SimulatedAnnealingAlgorithm(Chessboard chessboard) {
@@ -13,19 +13,21 @@ public class SimulatedAnnealingAlgorithm implements EightQueenAlgorithm {
         var random = new Random();
 
         int maxRowsMoved = (int) Math.ceil(temperature / 1000);
-        for (int col = 0; col < 8; col++) {
+
+        for (int col = 0; col < 8; col++) { //each column contains a queen; so loop over them to change the positions of them.
+
             int oldRow = -1;
-            for (int row = 0; row < 8; row++) {
+            for (int row = 0; row < 8; row++) { // find the queen in the current column.
                 if (chessboard.hasQueen(row, col)) {
                     oldRow = row;
                     chessboard.removeQueen(row, col);
                 }
             }
 
-            int squaresMoved = random.nextInt(-maxRowsMoved, maxRowsMoved);
+            int squaresMoved = random.nextInt(-maxRowsMoved, maxRowsMoved); //-maxRowsMoved to move up, maxRowsMoved to move down.
 
             int newRow = oldRow + squaresMoved;
-            if (newRow < 0) newRow = 0;
+            if (newRow < 0) newRow = 0; // prevent out of bounds operation
             if (newRow > 7) newRow = 7;
 
             chessboard.tryPlaceQueen(newRow, col);
@@ -36,7 +38,7 @@ public class SimulatedAnnealingAlgorithm implements EightQueenAlgorithm {
 
     void placeInitial() {
         var random = new Random();
-        for (int col = 0; col < 8; col++) {
+        for (int col = 0; col < 8; col++) { //place a queen on each column, randomized.
             chessboard.tryPlaceQueen(random.nextInt(8), col);
         }
     }
@@ -54,25 +56,26 @@ public class SimulatedAnnealingAlgorithm implements EightQueenAlgorithm {
             double temperature = 4000;
             double coolingRate = .99;
 
-            var current = best;
 
             for (double t = temperature; t >= 1; t *= coolingRate) {
+                var current = best;
+
                 var neighbor = generateNeighbor(best.copy(), t);
 
                 int bestEnergy = best.conflictingQueens();
                 int neighborEnergy = neighbor.conflictingQueens();
 
-                if (Math.random() < probability(bestEnergy, neighborEnergy, t)) {
+                if (Math.random() < probability(bestEnergy, neighborEnergy, t)) { // if the temperature is high or if the energy is better
                     current = neighbor;
                 }
 
-                if (neighborEnergy < bestEnergy) {
+                if (neighborEnergy < bestEnergy) { // copy the best or the current into the best if the current's energy is better.
                     best = current.copy();
-                    System.out.println("Found new best with energy " + bestEnergy + ": ");
+                    System.out.println("Found new best with energy " + bestEnergy + ":");
                     System.out.println(best);
                 }
 
-                if (best.isSolved()) break;
+                if (best.isSolved()) break; //if solved, break and return the best.
             }
         }
 
@@ -80,9 +83,9 @@ public class SimulatedAnnealingAlgorithm implements EightQueenAlgorithm {
         return best;
     }
 
-    public static double probability(double f1, double f2, double temp) {
-        if (f2 < f1) return 1;
-        return Math.exp((f1 - f2) / temp);
+    public static double probability(double energy1, double energy2, double temp) {
+        if (energy2 < energy1) return 1;
+        return Math.exp((energy1 - energy2) / temp); //magic math
     }
 
     @Override

@@ -14,7 +14,7 @@ public class BruteForceAlgorithm implements EightQueenAlgorithm {
         this.startTimeMs = new Date().getTime();
         try {
             solve(0, 0);
-        } catch (Exception e) {
+        } catch (Exception e) { // a solution has been found or the code broke.
             return chessboard;
         }
         return chessboard;
@@ -29,7 +29,7 @@ public class BruteForceAlgorithm implements EightQueenAlgorithm {
         // All queens are sets then a solution may be present
         if (placedQueens >= 8) {
             if (chessboard.isSolved()) {
-                throw new Exception();
+                throw new Exception(); // a solution is found; break all nested method calls.
             }
         } else {
 
