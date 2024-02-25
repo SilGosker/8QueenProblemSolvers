@@ -27,8 +27,9 @@ public class SimulatedAnnealingAlgorithm implements EightQueenAlgorithm {
             int squaresMoved = random.nextInt(-maxRowsMoved, maxRowsMoved); //-maxRowsMoved to move up, maxRowsMoved to move down.
 
             int newRow = oldRow + squaresMoved;
-            if (newRow < 0) newRow = 0; // prevent out of bounds operation
-            if (newRow > 7) newRow = 7;
+
+            if (newRow > 7) newRow = newRow % 7; // if higher than board size, wrap around and start at bottom of board
+            if (newRow < 0) newRow *= -1; // make always positive
 
             chessboard.tryPlaceQueen(newRow, col);
         }
