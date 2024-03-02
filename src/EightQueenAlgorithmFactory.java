@@ -10,6 +10,7 @@ public class EightQueenAlgorithmFactory {
         return switch (algorithm) {
             case "brute force" -> new BruteForceAlgorithm(chessboard);
             case "simulated annealing" -> new SimulatedAnnealingAlgorithm(chessboard);
+            case "backtracking" -> new BacktrackingAlgorithm(chessboard);
             default -> null;
         };
 
