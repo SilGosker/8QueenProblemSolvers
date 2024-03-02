@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Date;
 
 public class BruteForceAlgorithm implements EightQueenAlgorithm {
@@ -11,58 +12,48 @@ public class BruteForceAlgorithm implements EightQueenAlgorithm {
 
     @Override
     public Chessboard solve() {
-        this.startTimeMs = new Date().getTime();
-        try {
-            solve(0, 0);
-        } catch (Exception e) { // a solution has been found or the code broke.
-            return chessboard;
+        startTimeMs = new Date().getTime();
+
+        int[] queenLocations = new int[8];
+
+        while (!chessboard.isSolved()) {
+
+            for (int i = 0; i < queenLocations.length; i++) {
+                var location = queenLocations[i];
+                chessboard.tryPlaceQueen(location, i);
+            }
+
+            if (!chessboard.isSolved()) {
+
+                for (int i = 0; i < queenLocations.length; i++) {
+                    var location = queenLocations[i];
+                    chessboard.removeQueen(location, i);
+                }
+
+                try {
+                    incrementQueenCount(queenLocations);
+                } catch (Exception ex) {
+                    return chessboard;
+                }
+            }
         }
+
         return chessboard;
     }
 
-    private int placedQueens = 0;
-    private void solve(final int x, final int y) throws Exception {
-        // Put a queen on the current position
-        if (chessboard.tryPlaceQueen(x, y)) {
-            placedQueens++;
-        }
-        // All queens are sets then a solution may be present
-        if (placedQueens >= 8) {
-            if (chessboard.isSolved()) {
-                throw new Exception(); // a solution is found; break all nested method calls.
+    private void incrementQueenCount(int[] queenLocations) throws Exception {
+        for (int i = queenLocations.length - 1; i >= 0; i--) {
+            queenLocations[i]++;
+
+            if (Arrays.stream(queenLocations).allMatch(queenLocation -> queenLocation >= 7)){
+                throw new Exception("Maximum increment reached");
             }
-        } else {
 
-            // Recursive call to the next position
-            final int nextX = (x + 1) % 8;
-            // Switch to the next line
-            if (0 == nextX) {
-
-                // End of the chessboard check
-                if (y + 1 < 8) {
-                    solve(nextX, y + 1);
-                }
-            } else {
-                solve(nextX, y);
+            if (queenLocations[i] <= 7) {
+                break;
             }
-        }
 
-        // Remove the queen on the current position
-
-        chessboard.removeQueen(x, y);
-        placedQueens--;
-
-        // Recursive call to the next position
-        final int nextX = (x + 1) % 8;
-        // Switch to the next line
-        if (0 == nextX) {
-
-            // End of the chessboard check
-            if (y + 1 < 8) {
-                solve(nextX, y + 1);
-            }
-        } else {
-            solve(nextX, y);
+            queenLocations[i] = 0;
         }
     }
 
