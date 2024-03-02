@@ -54,9 +54,8 @@ public class SimulatedAnnealingAlgorithm implements EightQueenAlgorithm {
 
         while (!best.isSolved()) {
             tries++;
-            double temperature = 4000;
-            double coolingRate = .99;
-
+            double temperature = 6000;
+            double coolingRate = .75;
 
             for (double t = temperature; t >= 1; t *= coolingRate) {
                 var current = best;
@@ -73,7 +72,10 @@ public class SimulatedAnnealingAlgorithm implements EightQueenAlgorithm {
                 if (neighborEnergy < bestEnergy) { // copy the best or the current into the best if the current's energy is better.
                     best = current.copy();
                     System.out.println("Found new best with energy " + bestEnergy + ":");
-                    System.out.println(best);
+
+                    if (!best.isSolved())
+                        System.out.println(best);
+
                 }
 
                 if (best.isSolved()) break; //if solved, break and return the best.
